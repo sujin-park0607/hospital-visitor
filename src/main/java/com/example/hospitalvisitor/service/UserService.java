@@ -47,4 +47,9 @@ public class UserService {
 
         return JwtTokenUtil.createToken(user.getUserName(), secretKey, expireTime);
     }
+
+    public User getUserByUserName(String userName) {
+        return userRepository.findByUserName(userName)
+                .orElseThrow(() -> new RuntimeException("userName이 없음"));
+    }
 }
