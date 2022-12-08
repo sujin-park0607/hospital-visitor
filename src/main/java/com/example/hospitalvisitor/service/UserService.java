@@ -3,6 +3,8 @@ package com.example.hospitalvisitor.service;
 import com.example.hospitalvisitor.domain.User;
 import com.example.hospitalvisitor.domain.dto.UserDto;
 import com.example.hospitalvisitor.domain.dto.UserJoinRequest;
+import com.example.hospitalvisitor.exception.AppException;
+import com.example.hospitalvisitor.exception.ErrorCode;
 import com.example.hospitalvisitor.repository.UserRepository;
 import com.example.hospitalvisitor.utils.JwtTokenUtil;
 import lombok.RequiredArgsConstructor;
@@ -24,7 +26,7 @@ public class UserService {
         //중복 아이디가 없는지 검사
         userRepository.findByUserName(request.getUserName())
                 .ifPresent(user-> {
-                    throw new RuntimeException("중복된 회원입니다");
+                    throw new AppException(ErrorCode.DEPLICATED_USER_NAME, request.getUserName()+"은 중복된 아이디입니다.");
                 });
         User savedUser = userRepository.save(request.toEntity(encoder.encode(request.getPassword())));
 
@@ -38,11 +40,11 @@ public class UserService {
     public String login(String userName, String password) {
         //userName이 있는지
         User user = userRepository.findByUserName(userName)
-                .orElseThrow(()-> new RuntimeException("해당 userName이 없습니다"));
+                .orElseThrow(()-> new AppException(ErrorCode.USERNAME_NOT_FOUND,userName+"이 가입된 적이 없습니다."));
 
         //password가 같은지
         if(!encoder.matches(password, user.getPassword())){
-            throw new RuntimeException("비밀번호 오류");
+            throw new AppException(ErrorCode.INVALID_PASSWORD,"password가 일치하지 않습니다.");
         }
 
         return JwtTokenUtil.createToken(user.getUserName(), secretKey, expireTime);
@@ -50,6 +52,6 @@ public class UserService {
 
     public User getUserByUserName(String userName) {
         return userRepository.findByUserName(userName)
-                .orElseThrow(() -> new RuntimeException("userName이 없음"));
+                .orElseThrow(() -> new AppException(ErrorCode.USERNAME_NOT_FOUND,""));
     }
 }
