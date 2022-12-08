@@ -5,6 +5,7 @@ import com.example.hospitalvisitor.service.UserService;
 import com.example.hospitalvisitor.utils.JwtTokenUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -26,6 +27,7 @@ import java.util.List;
 public class JwtTokenFilter extends OncePerRequestFilter {
 
     private final UserService userService;
+    @Value("${jwt.token.secret}")
     private final String secretKey;
 
 
@@ -62,7 +64,6 @@ public class JwtTokenFilter extends OncePerRequestFilter {
 
         //UserDetail가져오기
         User user = userService.getUserByUserName(userName);
-        log.info("userRole:{}", user.getRole());
 
 
         //권한 여부 결정

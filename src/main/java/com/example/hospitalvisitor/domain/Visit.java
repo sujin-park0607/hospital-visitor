@@ -12,11 +12,19 @@ import javax.persistence.*;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public class User {
+public class Visit {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String userName;
-    private String password;
-    private String email;
+
+    @ManyToOne
+    @JoinColumn(name="hospital_id")
+    private Hospital hospital;
+
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
+    private String disease;
+    private float amount;
+
 }
